@@ -1,0 +1,5 @@
+1. Converting outdated firebase web namespaced syntax to web modular syntax.
+2. Converting outdated react syntax (version < 16.8) to the latest version.
+    - Examples are outdated class component syntaxes
+    - Outdated React Router library syntaxes
+    

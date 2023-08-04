@@ -1,5 +1,8 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React, {useState, useEffect, setState} from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { auth, handleUserProfile } from './firebase/utils';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, onSnapshot } from "firebase/firestore";
 import './default.scss';
 
 // Layouts 
@@ -9,29 +12,66 @@ import HomepageLayout from './layouts/HomepageLayout';
 // Pages
 import Homepage from './pages/Homepage';
 import Registration from './pages/Registration';
+import Login from './pages/Login';
 
-const HomepageWrapper = ({}) => {
+const HomepageWrapper = (props) => {
   return (
-    <HomepageLayout>
+    <HomepageLayout {...props}>
       <Homepage />
     </HomepageLayout>
   )
 }
 
-const RegistrationWrapper = ({}) => {
+const RegistrationWrapper = (props) => {
   return (
-    <MainLayout>
+    <MainLayout {...props}>
       <Registration />
     </MainLayout>
   )
 }
 
+const LoginWrapper = (props) => {
+  return (
+    props.currentUser ? <Navigate to="/"/> :
+    <MainLayout {...props}>
+      <Login />
+    </MainLayout>
+  )
+}
+
+const initialState = {
+  currentUser: null
+};
+
 function App() {
+  
+  const [state, setState] = useState(initialState);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, async (userAuth) => {
+      if (userAuth) {
+        const userRef = await handleUserProfile(userAuth);
+        onSnapshot(userRef, (snapshot) => {
+          setState({ currentUser: {
+              id: snapshot.id,
+              ...snapshot.data()
+            }
+          })
+        })
+      }
+
+      setState({...initialState});
+    });
+  }, []);
+
+  console.log(state);
+  const { currentUser } = state;
   return (
     <div className="App">
       <Routes>
-          <Route exact path="/" element={<HomepageWrapper />} />
-          <Route path="/registration" element={<RegistrationWrapper />} />
+          <Route exact path="/" element={<HomepageWrapper currentUser={currentUser}/>} />
+          <Route path="/registration" element={<RegistrationWrapper currentUser={currentUser} />} />
+          <Route path="/login" element={<LoginWrapper currentUser={currentUser} />} />
       </Routes>
     </div>
   );
