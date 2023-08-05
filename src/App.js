@@ -13,6 +13,7 @@ import HomepageLayout from './layouts/HomepageLayout';
 import Homepage from './pages/Homepage';
 import Registration from './pages/Registration';
 import Login from './pages/Login';
+import Recovery from './pages/Recovery';
 
 const HomepageWrapper = (props) => {
   return (
@@ -35,6 +36,15 @@ const LoginWrapper = (props) => {
     props.currentUser ? <Navigate to="/"/> :
     <MainLayout {...props}>
       <Login />
+    </MainLayout>
+  )
+}
+
+const RecoveryWrapper = (props) => {
+  return (
+    props.currentUser ? <Navigate to="/"/> :
+    <MainLayout {...props}>
+      <Recovery />
     </MainLayout>
   )
 }
@@ -73,6 +83,7 @@ function App() {
            <RegistrationWrapper currentUser={currentUser}/>} />
           <Route path="/login" element={currentUser ? <Navigate to="/" /> :
             <LoginWrapper currentUser={currentUser} />} />
+          <Route path="/recovery" element={<RecoveryWrapper currentUser={currentUser}/>} />
       </Routes>
     </div>
   );
