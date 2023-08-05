@@ -35,6 +35,10 @@
             .linkContainer {
                 display: flex;
                 gap: 20px;
+
+                li {
+                    cursor: pointer;
+                }
             }
 
             ul, li {

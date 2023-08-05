@@ -64,14 +64,15 @@ function App() {
     });
   }, []);
 
-  console.log(state);
   const { currentUser } = state;
   return (
     <div className="App">
       <Routes>
           <Route exact path="/" element={<HomepageWrapper currentUser={currentUser}/>} />
-          <Route path="/registration" element={<RegistrationWrapper currentUser={currentUser} />} />
-          <Route path="/login" element={<LoginWrapper currentUser={currentUser} />} />
+          <Route path="/registration" element={currentUser ? <Navigate to="/" /> :
+           <RegistrationWrapper currentUser={currentUser}/>} />
+          <Route path="/login" element={currentUser ? <Navigate to="/" /> :
+            <LoginWrapper currentUser={currentUser} />} />
       </Routes>
     </div>
   );
