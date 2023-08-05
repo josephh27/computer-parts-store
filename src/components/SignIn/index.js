@@ -35,6 +35,7 @@ const SignIn = (props) => {
             setState({
                 ...initialState
             });
+            console.log("LOGGEDD IN")
         } catch(err) {
             console.log(err);
         }

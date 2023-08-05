@@ -1,8 +1,10 @@
 import React, {useState, useEffect, setState} from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { connect } from 'react-redux';
 import { auth, handleUserProfile } from './firebase/utils';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from "firebase/firestore";
+import { setCurrentUser } from './redux/User/user.actions';
 import './default.scss';
 
 // Layouts 
@@ -49,44 +51,47 @@ const RecoveryWrapper = (props) => {
   )
 }
 
-const initialState = {
-  currentUser: null
-};
-
-function App() {
-  
-  const [state, setState] = useState(initialState);
+function App(props) {
 
   useEffect(() => {
+    const { setCurrentUser } = props;
+
     onAuthStateChanged(auth, async (userAuth) => {
       if (userAuth) {
         const userRef = await handleUserProfile(userAuth);
         onSnapshot(userRef, (snapshot) => {
-          setState({ currentUser: {
-              id: snapshot.id,
-              ...snapshot.data()
-            }
-          })
+          setCurrentUser({
+            id: snapshot.id,
+            ...snapshot.data()
+          });
         })
       }
 
-      setState({...initialState});
+      setCurrentUser(userAuth);
     });
   }, []);
 
-  const { currentUser } = state;
+  const { currentUser } = props;
   return (
     <div className="App">
       <Routes>
-          <Route exact path="/" element={<HomepageWrapper currentUser={currentUser}/>} />
+          <Route exact path="/" element={<HomepageWrapper />} />
           <Route path="/registration" element={currentUser ? <Navigate to="/" /> :
-           <RegistrationWrapper currentUser={currentUser}/>} />
+           <RegistrationWrapper />} />
           <Route path="/login" element={currentUser ? <Navigate to="/" /> :
-            <LoginWrapper currentUser={currentUser} />} />
-          <Route path="/recovery" element={<RecoveryWrapper currentUser={currentUser}/>} />
+            <LoginWrapper />} />
+          <Route path="/recovery" element={<RecoveryWrapper />} />
       </Routes>
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = ({ user }) => ({
+  currentUser: user.currentUser
+})
+
+const mapDispatchToProps = dispatch => ({
+  setCurrentUser: user => dispatch(setCurrentUser(user))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
