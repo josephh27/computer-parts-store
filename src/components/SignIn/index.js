@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { signInUser, signInWithGoogle, resetAllAuthForms } from './../../redux/User/user.actions';
+import userTypes from './../../redux/User/user.types';
 import './styles.scss';
 import Buttons from './../forms/Button';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { signInWithGoogle, auth } from '../../firebase/utils';
 import FormInput from './../forms/FormInput';
 import AuthWrapper from '../AuthWrapper';
+
+const mapState = ({ user }) => ({
+    signInSuccess: user.signInSuccess
+})
 
 const initialState = {
     email: '',
@@ -13,12 +19,26 @@ const initialState = {
 }
 
 const SignIn = (props) => {
+    const dispatch = useDispatch();
+    const { signInSuccess } = useSelector(mapState);
     const [ state, setState ]  = useState(initialState);
     const { email, password } = state;
+    const navigate = useNavigate();
     const configAuthWrapper = {
         headline: 'Login'
     };
     
+    useEffect(() => {
+        if (signInSuccess) {
+            setState({
+                ...initialState
+            });
+            dispatch(resetAllAuthForms());
+            navigate('/');
+        }
+
+    }, [signInSuccess]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setState({
@@ -27,18 +47,13 @@ const SignIn = (props) => {
         })
     }
     
-    const handleSubmit = async (e) => {
+    const handleGoogleSignIn = () => {
+         dispatch(signInWithGoogle());
+    }
+
+    const handleSubmit = (e) => {
         e.preventDefault();
-        const { email, password } = state;
-        try {
-            await signInWithEmailAndPassword(auth, email, password); 
-            setState({
-                ...initialState
-            });
-            console.log("LOGGEDD IN")
-        } catch(err) {
-            console.log(err);
-        }
+        dispatch(signInUser({ email, password }));
     }
 
     return (
@@ -66,7 +81,7 @@ const SignIn = (props) => {
                     </Buttons>
                     <div className="socialSignin">
                         <div className="row">
-                            <Buttons onClick={signInWithGoogle}>
+                            <Buttons onClick={handleGoogleSignIn}>
                                 Sign in with Google
                             </Buttons>
                         </div>

@@ -1,12 +1,17 @@
-import React, { Component, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import userTypes from './../../redux/User/user.types';
 import './styles.scss';
-import { auth } from './../../firebase/utils';
-import { sendPasswordResetEmail } from 'firebase/auth';
-
+import { resetPassword, resetAllAuthForms } from '../../redux/User/user.actions';
 import AuthWrapper from '../AuthWrapper';
 import FormInput from '../forms/FormInput';
 import Button from './../forms/Button';
+
+const mapState = ({ user }) => ({
+    resetPasswordSuccess: user.resetPasswordSuccess,
+    resetPasswordError: user.resetPasswordError
+})
 
 const initialState = {
     email: '',
@@ -14,9 +19,27 @@ const initialState = {
 };
 
 const EmailPassword = (props) => {
+    const { resetPasswordSuccess, resetPasswordError } = useSelector(mapState);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [state, setState] = useState(initialState);
     const { email, errors } = state;
-    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (resetPasswordSuccess) {
+            dispatch(resetAllAuthForms());
+            navigate('/login');
+        }
+    }, [resetPasswordSuccess]);
+
+    useEffect(() => {
+        if (Array.isArray(resetPasswordError) && resetPasswordError.length > 0) {
+            setState({
+                ...state,
+                errors: resetPasswordError
+            })
+        }
+    }, [resetPasswordError]);
 
     const configAuthWrapper = {
         headline: 'Email Password'
@@ -30,25 +53,9 @@ const EmailPassword = (props) => {
         })
     }
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-
-        try {
-            const { email } = state; 
-            await sendPasswordResetEmail(auth, email)
-                .then(() => {
-                    navigate("/login");
-                })
-                .catch(() => {
-                    const err = ['Email not found. Please try again.'];
-                    setState({
-                        ...state,
-                        errors: err
-                    })
-                })
-        } catch(err) {
-
-        }
+        dispatch(resetPassword({ email }));
     }
 
     return ( 

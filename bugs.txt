@@ -1,0 +1,2 @@
+1. Login Page is still accessible even though the user is already logged in.
+2. unuseAuth is not a valid react component name.

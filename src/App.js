@@ -1,11 +1,14 @@
 import React, {useState, useEffect, setState} from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { auth, handleUserProfile } from './firebase/utils';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from "firebase/firestore";
 import { setCurrentUser } from './redux/User/user.actions';
 import './default.scss';
+
+// HOC 
+import { WithAuth, WithoutAuth } from './hoc/withAuth';
 
 // Layouts 
 import MainLayout from './layouts/MainLayout';
@@ -16,6 +19,7 @@ import Homepage from './pages/Homepage';
 import Registration from './pages/Registration';
 import Login from './pages/Login';
 import Recovery from './pages/Recovery';
+import Dashboard from './pages/Dashboard';
 
 const HomepageWrapper = (props) => {
   return (
@@ -27,71 +31,79 @@ const HomepageWrapper = (props) => {
 
 const RegistrationWrapper = (props) => {
   return (
-    <MainLayout {...props}>
-      <Registration />
-    </MainLayout>
+    <WithoutAuth>
+      <MainLayout {...props}>
+        <Registration />
+      </MainLayout>
+    </WithoutAuth>
   )
 }
 
 const LoginWrapper = (props) => {
   return (
-    props.currentUser ? <Navigate to="/"/> :
-    <MainLayout {...props}>
-      <Login />
-    </MainLayout>
+    <WithoutAuth>
+      <MainLayout {...props}>
+        <Login />
+      </MainLayout>
+    </WithoutAuth> 
   )
 }
 
 const RecoveryWrapper = (props) => {
   return (
-    props.currentUser ? <Navigate to="/"/> :
-    <MainLayout {...props}>
-      <Recovery />
-    </MainLayout>
+      <MainLayout {...props}>
+          <Recovery />
+      </MainLayout>
   )
 }
 
-function App(props) {
+const DashboardWrapper = (props) => {
+  return (
+    <WithAuth>
+      <MainLayout {...props}>
+        <Dashboard />
+      </MainLayout>
+    </WithAuth>
+      
+  )
+}
 
+function App(props) { 
+  const dispatch = useDispatch();
   useEffect(() => {
-    const { setCurrentUser } = props;
 
-    onAuthStateChanged(auth, async (userAuth) => {
+    const authListener = onAuthStateChanged(auth, async (userAuth) => {
       if (userAuth) {
         const userRef = await handleUserProfile(userAuth);
         onSnapshot(userRef, (snapshot) => {
-          setCurrentUser({
+          dispatch(setCurrentUser({
             id: snapshot.id,
             ...snapshot.data()
-          });
+          }));
         })
       }
 
-      setCurrentUser(userAuth);
-    });
+      dispatch(setCurrentUser(userAuth));
+  });
+
+  return () => {
+    authListener();
+  }
+
+
   }, []);
 
-  const { currentUser } = props;
   return (
     <div className="App">
       <Routes>
           <Route exact path="/" element={<HomepageWrapper />} />
-          <Route path="/registration" element={currentUser ? <Navigate to="/" /> :
-           <RegistrationWrapper />} />
-          <Route path="/login" element={currentUser ? <Navigate to="/" /> :
-            <LoginWrapper />} />
+          <Route path="/registration" element={<RegistrationWrapper />} />
+          <Route path="/login" element={<LoginWrapper />} />
           <Route path="/recovery" element={<RecoveryWrapper />} />
+          <Route path="/dashboard" element={<DashboardWrapper />} />
       </Routes>
     </div>
   );
 }
 
-const mapStateToProps = ({ user }) => ({
-  currentUser: user.currentUser
-})
-
-const mapDispatchToProps = dispatch => ({
-  setCurrentUser: user => dispatch(setCurrentUser(user))
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;
