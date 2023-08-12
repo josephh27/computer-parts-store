@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, getDoc, setDoc, collection } from 'firebase/firestore';
-import { getAuth, GoogleAuthProvider, signInWithPopup  } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'firebase/auth';
 import  { firebaseConfig } from './config';
 
 const app = initializeApp(firebaseConfig);
@@ -13,7 +13,7 @@ GoogleProvider.setCustomParameters({ prompt: 'select_account' });
 
 
 
-export const handleUserProfile = async (userAuth, additionalData) => {
+export const handleUserProfile = async ({ userAuth, additionalData }) => {
     if (!userAuth) return;
     const { uid } = userAuth;
 
@@ -36,4 +36,14 @@ export const handleUserProfile = async (userAuth, additionalData) => {
         }
     }
     return userRef;
+}
+
+export const getCurrentUser = () => {
+    return new Promise((resolve, reject) => {
+        const unsubscribe = onAuthStateChanged(auth, userAuth => {
+            console.log(userAuth)
+            unsubscribe();
+            resolve(userAuth);
+        }, reject);
+    })
 }

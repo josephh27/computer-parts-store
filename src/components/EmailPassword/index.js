@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import userTypes from './../../redux/User/user.types';
 import './styles.scss';
-import { resetPassword, resetAllAuthForms } from '../../redux/User/user.actions';
+import { resetPasswordStart, resetUserState } from '../../redux/User/user.actions';
 import AuthWrapper from '../AuthWrapper';
 import FormInput from '../forms/FormInput';
 import Button from './../forms/Button';
 
 const mapState = ({ user }) => ({
     resetPasswordSuccess: user.resetPasswordSuccess,
-    resetPasswordError: user.resetPasswordError
+    userErr: user.userErr
 })
 
 const initialState = {
@@ -19,7 +18,7 @@ const initialState = {
 };
 
 const EmailPassword = (props) => {
-    const { resetPasswordSuccess, resetPasswordError } = useSelector(mapState);
+    const { resetPasswordSuccess, userErr } = useSelector(mapState);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [state, setState] = useState(initialState);
@@ -27,19 +26,19 @@ const EmailPassword = (props) => {
 
     useEffect(() => {
         if (resetPasswordSuccess) {
-            dispatch(resetAllAuthForms());
+            dispatch(resetUserState());
             navigate('/login');
         }
     }, [resetPasswordSuccess]);
 
     useEffect(() => {
-        if (Array.isArray(resetPasswordError) && resetPasswordError.length > 0) {
+        if (Array.isArray(userErr) && userErr.length > 0) {
             setState({
                 ...state,
-                errors: resetPasswordError
+                errors: userErr
             })
         }
-    }, [resetPasswordError]);
+    }, [userErr]);
 
     const configAuthWrapper = {
         headline: 'Email Password'
@@ -55,7 +54,7 @@ const EmailPassword = (props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(resetPassword({ email }));
+        dispatch(resetPasswordStart({ email }));
     }
 
     return ( 

@@ -1,10 +1,10 @@
 import React, {useState, useEffect, setState} from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { auth, handleUserProfile } from './firebase/utils';
-import { onAuthStateChanged } from 'firebase/auth';
-import { doc, onSnapshot } from "firebase/firestore";
-import { setCurrentUser } from './redux/User/user.actions';
+// import { auth, handleUserProfile } from './firebase/utils';
+// import { onAuthStateChanged } from 'firebase/auth';
+// import { doc, onSnapshot } from "firebase/firestore";
+import { setCurrentUser, checkUserSession } from './redux/User/user.actions';
 import './default.scss';
 
 // HOC 
@@ -64,33 +64,14 @@ const DashboardWrapper = (props) => {
         <Dashboard />
       </MainLayout>
     </WithAuth>
-      
   )
 }
 
 function App(props) { 
   const dispatch = useDispatch();
   useEffect(() => {
-
-    const authListener = onAuthStateChanged(auth, async (userAuth) => {
-      if (userAuth) {
-        const userRef = await handleUserProfile(userAuth);
-        onSnapshot(userRef, (snapshot) => {
-          dispatch(setCurrentUser({
-            id: snapshot.id,
-            ...snapshot.data()
-          }));
-        })
-      }
-
-      dispatch(setCurrentUser(userAuth));
-  });
-
-  return () => {
-    authListener();
-  }
-
-
+    dispatch(checkUserSession());
+ 
   }, []);
 
   return (
