@@ -6,6 +6,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswor
 import { getDoc } from 'firebase/firestore';
 import { handleResetPasswordAPI } from './user.helpers';
 
+// Every call to the functions from user.actions are inside put() function to officially dispatch it
 export function* getSnapShopFromUserAuth(user, additionalData={}) {
     try {
         const userRef = yield call(handleUserProfile, { userAuth: user, additionalData });
@@ -85,7 +86,6 @@ export function* signUpUser({ payload: {
         const { user } = yield createUserWithEmailAndPassword(auth, email, password);
         const additionalData = { displayName };
         yield getSnapShopFromUserAuth(user, additionalData);
-        // yield call(handleUserProfile, { userAuth: user, additionalData: { displayName }});
     } catch (err) {
         console.log(err);
     }
@@ -122,15 +122,6 @@ export function* googleSignIn() {
         console.log(err)
     }
 }
-
-
-
-
-
-
-
-
-
 
 export function* onGoogleSignInStart() {
     yield takeLatest(userTypes.GOOGLE_SIGN_IN_START, googleSignIn);

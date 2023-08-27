@@ -27,6 +27,8 @@ export const signUpUserStart = userCredentials => ({
     payload: userCredentials
 })
 
+// Gets value from user.sagas functions by calling this function
+// Passes payload value to user.reducer case types
 export const userError = err => ({
     type: userTypes.USER_ERROR,
     payload: err

@@ -12,17 +12,15 @@ export const GoogleProvider = new GoogleAuthProvider();
 GoogleProvider.setCustomParameters({ prompt: 'select_account' });
 
 
-
 export const handleUserProfile = async ({ userAuth, additionalData }) => {
     if (!userAuth) return;
     const { uid } = userAuth;
 
     const userRef = doc(collection(firestore, "users"), `${uid}`);
     const snapshot = await getDoc(userRef);
-
-    if (snapshot.exists) {
+    if (!snapshot.exists()) {
         const { displayName, email } = userAuth;
-        const timestamp = new Date();
+        const timestamp = new Date(); 
 
         try {
             await setDoc(userRef, {
@@ -41,7 +39,6 @@ export const handleUserProfile = async ({ userAuth, additionalData }) => {
 export const getCurrentUser = () => {
     return new Promise((resolve, reject) => {
         const unsubscribe = onAuthStateChanged(auth, userAuth => {
-            console.log(userAuth)
             unsubscribe();
             resolve(userAuth);
         }, reject);

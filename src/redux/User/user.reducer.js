@@ -19,6 +19,8 @@ const userReducer = (state=INITIAL_STATE, action) => {
                 ...state,
                 resetPasswordSuccess: action.payload
             }
+        // Gets value from user.actions payloads
+        
         case userTypes.USER_ERROR:
             return {
                 ...state,

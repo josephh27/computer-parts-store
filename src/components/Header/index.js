@@ -3,12 +3,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { signOutUserStart } from './../../redux/User/user.actions';
 import './styles.scss';
-
+import { firestore } from './../../firebase/utils';
+import { collection, getDocs, deleteDoc } from 'firebase/firestore';
 import Logo from './../../assets/logo.png';
+
 
 const mapState = ({ user }) => ({
     currentUser: user.currentUser
 });
+
 
 const Header = props => {
     const dispatch = useDispatch();
@@ -26,6 +29,21 @@ const Header = props => {
                         <img src={Logo} alt="Simple Logo" />
                     </Link>
                 </div>
+
+                <nav>
+                    <ul>
+                        <li>
+                            <Link to="/">
+                                Home
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="/search">
+                                Search
+                            </Link>
+                        </li>
+                    </ul>
+                </nav>
 
                 <div className="callToActions">
                     {currentUser && (
