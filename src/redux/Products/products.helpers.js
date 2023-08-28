@@ -1,5 +1,5 @@
 import { firestore } from './../../firebase/utils';
-import { collection, doc, setDoc, onSnapshot, getDocs, getDoc, deleteDoc, orderBy, query } from 'firebase/firestore';
+import { collection, doc, setDoc, onSnapshot, getDocs, getDoc, deleteDoc, orderBy, query, where } from 'firebase/firestore';
 
 export const handleAddProduct = product => {
     return new Promise((resolve, reject) => {
@@ -13,9 +13,14 @@ export const handleAddProduct = product => {
     })
 }
 
-export const handleFetchProducts = () => {
+export const handleFetchProducts = ({ filterType }) => {
     return new Promise((resolve, reject) => {
-        getDocs(query(collection(firestore, 'products'), orderBy('productPrice'))).then(snapshot => {
+        let ref = collection(firestore, 'products');
+        if (filterType) {
+            ref = query(ref, where('productCategory', '==', filterType));
+        }
+
+        getDocs(ref, orderBy('productPrice')).then(snapshot => {
             const productsArray = snapshot.docs.map(doc => {
                 return {
                     ...doc.data(),

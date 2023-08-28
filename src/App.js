@@ -92,6 +92,14 @@ const SearchWrapper = () => {
   )
 }
 
+const SearchFilterWrapper = () => {
+  return (
+    <MainLayout>
+      <Search />
+    </MainLayout>
+  )
+}
+
 function App(props) { 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -104,7 +112,8 @@ function App(props) {
       <AdminToolbar />
       <Routes>
           <Route exact path="/" element={<HomepageWrapper />} />
-          <Route path="/search" element={<SearchWrapper />} />
+          <Route exact path="/search" element={<SearchWrapper />} />
+          <Route path="/search/:filterType" element={<SearchFilterWrapper />} />
           <Route path="/registration" element={<RegistrationWrapper />} />
           <Route path="/login" element={<LoginWrapper />} />
           <Route path="/recovery" element={<RecoveryWrapper />} />
