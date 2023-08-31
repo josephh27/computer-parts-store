@@ -1,21 +1,21 @@
 import React from 'react';
+import './styles.scss';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { signOutUserStart } from './../../redux/User/user.actions';
-import './styles.scss';
-import { firestore } from './../../firebase/utils';
-import { collection, getDocs, deleteDoc } from 'firebase/firestore';
+import { selectCartItemsCount } from './../../redux/Cart/cart.selectors';
 import Logo from './../../assets/logo.png';
 
 
-const mapState = ({ user }) => ({
-    currentUser: user.currentUser
+const mapState = (state) => ({
+    currentUser: state.user.currentUser,
+    totalNumCartItems: selectCartItemsCount(state)
 });
 
 
 const Header = props => {
     const dispatch = useDispatch();
-    const { currentUser } = useSelector(mapState);
+    const { currentUser, totalNumCartItems } = useSelector(mapState);
 
     const signOut = () => {
         dispatch(signOutUserStart());
@@ -46,36 +46,38 @@ const Header = props => {
                 </nav>
 
                 <div className="callToActions">
-                    {currentUser && (
-                        <ul className="linkContainer">
+                    <ul>
+                        <li>
+                            <Link>
+                                Your Cart ({totalNumCartItems})
+                            </Link>
+                        </li>
+                        {currentUser && [
                             <li>
                                 <Link to="/dashboard">
                                     My Account
                                 </Link>
-                            </li>
+                            </li>,
                             <li>
                                 <a onClick={() => signOut()}>
                                     Logout
                                 </a>
                             </li>
-                        </ul>
-                    )}
+                        ]}
 
-                    {!currentUser && (
-                        <ul className="linkContainer">
+                        {!currentUser && [
                             <li>
                                 <Link to="/registration">
                                     Register
                                 </Link>
-                            </li>
+                            </li>,
                             <li>
                                 <Link to="/login">
                                     Login
                                 </Link>
                             </li>
-                        </ul>
-                    )}
-                    
+                        ]}
+                    </ul>  
                 </div>
             </div>
         </header>
