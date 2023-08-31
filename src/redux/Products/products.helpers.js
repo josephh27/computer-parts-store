@@ -47,7 +47,6 @@ export const handleFetchProducts = ({ filterType, startAfterDoc, persistProducts
                 })
             ];
             
-            console.log(snapshot.size);
             resolve({
                 data,
                 queryDoc: snapshot.docs[totalCount - 1],
@@ -71,4 +70,20 @@ export const handleDeleteProduct = documentID => {
             reject(err);
         })
     })
+}
+
+export const handleFetchProduct = productID => {
+    return new Promise((resolve, reject) => {
+        getDoc(doc(collection(firestore, 'products'), productID))
+        .then(snapshot => {
+            if (snapshot.exists) {
+                resolve(
+                    snapshot.data()
+                );
+            }; 
+        })
+        .catch(err => {
+            reject(err);
+        })
+    }) 
 }

@@ -26,6 +26,8 @@ import Login from './pages/Login';
 import Recovery from './pages/Recovery';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
+import ProductDetails from './pages/ProductDetails';
+import Product from './components/ProductResults/Product';
 
 
 const HomepageWrapper = () => {
@@ -100,6 +102,14 @@ const SearchFilterWrapper = () => {
   )
 }
 
+const ProductDetailsWrapper = () => {
+  return (
+    <MainLayout>
+      <ProductDetails />
+    </MainLayout>
+  )
+}
+
 function App(props) { 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -114,6 +124,7 @@ function App(props) {
           <Route exact path="/" element={<HomepageWrapper />} />
           <Route exact path="/search" element={<SearchWrapper />} />
           <Route path="/search/:filterType" element={<SearchFilterWrapper />} />
+          <Route path="/product/:productID" element={<ProductDetailsWrapper />} />
           <Route path="/registration" element={<RegistrationWrapper />} />
           <Route path="/login" element={<LoginWrapper />} />
           <Route path="/recovery" element={<RecoveryWrapper />} />
