@@ -1,17 +1,18 @@
 import './styles.scss';
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { selectCartItems } from '../../redux/Cart/cart.selectors';
+import { selectCartItems, selectCartTotal } from '../../redux/Cart/cart.selectors';
 import { createStructuredSelector } from 'reselect';
 import Button from '../forms/Button';
 import Item from './Item';
 
 const mapState = createStructuredSelector({
-    cartItems: selectCartItems
-
+    cartItems: selectCartItems,
+    total: selectCartTotal
 })
 const Checkout = ({}) => {
-    const { cartItems } = useSelector(mapState);
-
+    const { cartItems, total } = useSelector(mapState);
+    const navigate = useNavigate();
     const errMsg ='You have no items in your cart.';
     return (
         <div className="checkout">
@@ -68,7 +69,7 @@ const Checkout = ({}) => {
                                 <tr align="right"> 
                                   <td>
                                     <h3>
-                                        Total:
+                                        Total: {total}
                                     </h3>
                                   </td>
                                 </tr>
@@ -78,7 +79,7 @@ const Checkout = ({}) => {
                                         <tbody>
                                             <tr>
                                                 <td>
-                                                    <Button>
+                                                    <Button onClick={() => navigate(-1)}> 
                                                         Continue Shopping
                                                     </Button>
                                                 </td>

@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { removeCartItem } from '../../../redux/Cart/cart.actions';
+import { removeCartItem, addProduct, reduceCartItem } from '../../../redux/Cart/cart.actions';
 
 const Item = (product) => {
     const dispatch = useDispatch();
@@ -17,6 +17,18 @@ const Item = (product) => {
                 documentID
             })
         )
+    };
+
+    const handleAddProduct = (product) => {
+        dispatch(
+            addProduct(product)
+        )
+    };
+
+    const handleReduceCartItem = (product) => {
+        dispatch(
+            reduceCartItem(product)
+        );
     }
 
     return (
@@ -30,8 +42,14 @@ const Item = (product) => {
                         {productName}
                     </td>
                     <td>
+                        <span className="cartBtn" onClick={() => handleReduceCartItem(product)}> 
+                            {`< `}
+                        </span>
                         <span>
                             {quantity}
+                        </span>
+                        <span className="cartBtn" onClick={() => handleAddProduct(product)}>
+                            {` >`}
                         </span>
                     </td>
                     <td>

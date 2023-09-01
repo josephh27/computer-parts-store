@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProductStart, setProduct } from './../../redux/Products/products.actions';
 import { addProduct } from '../../redux/Cart/cart.actions';
@@ -12,6 +12,7 @@ const mapState = state => ({
 
 const ProductCard = ({}) => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { productID } = useParams();
     const { product } = useSelector(mapState);
 
@@ -40,6 +41,7 @@ const ProductCard = ({}) => {
         dispatch(
             addProduct(product)
         )
+        navigate('/cart');
     }
 
     const configAddToCartBtn = {
