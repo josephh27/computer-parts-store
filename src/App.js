@@ -28,6 +28,7 @@ import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import ProductDetails from './pages/ProductDetails';
 import Product from './components/ProductResults/Product';
+import Cart from './pages/Cart';
 
 
 const HomepageWrapper = () => {
@@ -110,6 +111,15 @@ const ProductDetailsWrapper = () => {
   )
 }
 
+const CartWrapper = () => {
+  return (
+    <MainLayout>
+      <Cart />
+    </MainLayout>
+  )
+}
+
+
 function App(props) { 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -130,6 +140,7 @@ function App(props) {
           <Route path="/recovery" element={<RecoveryWrapper />} />
           <Route path="/dashboard" element={<DashboardWrapper />} />
           <Route path="/admin" element={<AdminWrapper />} />
+          <Route path="/cart" element={<CartWrapper />} />
       </Routes>
     </div>
   );
